@@ -15,6 +15,7 @@ FILING_TYPES = ["10-K", "10-Q"]
 START_YEAR = 2014
 END_YEAR = 2024
 MAX_WORKERS = 1  # Number of threads
+REQUEST_DELAY = 1  # Delay in seconds between requests
 
 # Ensure save directory exists
 os.makedirs(SAVE_DIR, exist_ok=True)
@@ -64,6 +65,7 @@ def get_filing_links(cik, filing_type):
         if detail_link:
             filing_links.append(("https://www.sec.gov" + detail_link["href"], filing_date))
 
+    time.sleep(REQUEST_DELAY)  # Add delay between requests
     return filing_links
 
 # Step 3: Extract PDF Link from Filing Page
@@ -83,6 +85,7 @@ def get_pdf_link(filing_page_url):
         if doc_link and "pdf" in doc_link.text.lower():
             return "https://www.sec.gov" + doc_link["href"]
 
+    time.sleep(REQUEST_DELAY)  # Add delay between requests
     return None
 
 # Step 4: Download and Save PDF
@@ -112,7 +115,7 @@ def process_company_filing(company, cik):
                 filename = download_pdf(pdf_url, company, filing_type, filing_date)
                 if filename:
                     results.append({"Company": company, "Filing": filing_type, "Date": filing_date, "File": filename})
-            time.sleep(1)  # Rate-limiting per request
+            time.sleep(REQUEST_DELAY)  # Add delay between requests
 
     return results
 
