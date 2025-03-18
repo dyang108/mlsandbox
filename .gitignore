@@ -1,3 +1,4 @@
 data/
 .data
 geoguessr/predicted_location*
+*.pth
